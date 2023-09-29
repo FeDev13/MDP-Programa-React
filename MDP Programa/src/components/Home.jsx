@@ -1,6 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
+  const developers = [
+    { nombre: "Pablo", ubicacion: "Argentina", id: "1" },
+    { nombre: "Paul", ubicacion: "EEUU", id: "2" },
+  ];
+
   const [contador, setContador] = useState(0); //[estadoInicial, funcionSeteadora] = useState (valor inicial del estado)
   const [color, setColor] = useState(false);
   const [word, setWord] = useState("");
@@ -8,6 +14,7 @@ const Home = () => {
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
   const [h2Text, setH2Text] = useState("");
+  const [planet, setPlanet] = useState("");
 
   const incrementador = () => {
     //funcion que invoca a la seteadora del estado
@@ -47,8 +54,36 @@ const Home = () => {
     setEmail("");
   };
 
+  /*  useEffect(() => {
+    console.log("la suma es", contador);
+    return () => {
+      console.log("se desmonta");
+    };
+  }, [contador]); */
+
+  /* useEffect(() => {
+    fetch("https://swapi.dev/api/planets/1/")
+      .then((response) => response.json())
+      .then((data) => setPlanet(data.name));
+  }, []); */
+  useEffect(() => {
+    const url = "https://swapi.dev/api/planets/1/";
+    const fetchData = async () => {
+      try {
+        const response = await fetch(url);
+        const json = await response.json();
+        setPlanet(json.name);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className="mt-20 w-1/2 mx-auto flex flex-col">
+      {planet}
+      <Link to="users">Ver usuarios</Link>
       <div className="flex flex-col justify-center">
         <p>{contador}</p> {/* render dinamico del estado */}
         <button onClick={incrementador} className=" w-[30%] mx-auto my-10">
@@ -113,6 +148,14 @@ const Home = () => {
         </form>
         <h2>{h2Text}</h2>
       </div>
+      {developers.map((developer) => {
+        return (
+          <li key={developer.id}>
+            {developer.nombre} {developer.ubicacion}
+          </li>
+        );
+      })}
+      <div>{planet}</div>
     </div>
   );
 };
